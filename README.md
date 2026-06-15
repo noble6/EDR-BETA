@@ -2,7 +2,7 @@
 
 Nexus is a production-grade, hybrid Endpoint Detection and Response (EDR) and Threat Intelligence platform. It combines a lightweight, kernel-aware Rust endpoint agent with a scalable Python microservices backend to deliver real-time malware detection, Machine Learning (ML) static analysis, and dynamic sandbox detonation.
 
-## 🌟 Key Features
+##  Key Features
 
 ### Endpoint Agent (Rust)
 * **eBPF Kernel Monitoring:** Direct memory inspection of `sys_enter_execve` for spotting reverse shells and process injection with near-zero overhead.
@@ -40,7 +40,7 @@ Nexus is a production-grade, hybrid Endpoint Detection and Response (EDR) and Th
 
 ---
 
-## 🚀 Quick Start
+##  Quick Start
 
 ### Prerequisites
 * Docker & Docker Compose
