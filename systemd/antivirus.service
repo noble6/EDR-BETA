@@ -1,0 +1,122 @@
+[Unit]
+Description=EDR-BETA Antivirus Daemon (av-daemon)
+Documentation=https://github.com/noble6/EDR-BETA
+After=network.target
+# Ensure the daemon only starts after the network is up so backend
+# API connectivity (heartbeat + scan results) is available on boot.
+
+[Service]
+# --- Identity ---
+# Run as a dedicated least-privilege service account.
+# Create with: useradd -r -s /sbin/nologin -d /opt/antivirus avd
+User=avd
+Group=avd
+
+# --- Binary ---
+ExecStart=/opt/antivirus/bin/av-daemon --config /etc/antivirus/daemon.conf
+# Graceful stop: SIGTERM, then SIGKILL after 30 s
+ExecStop=/bin/kill -TERM $MAINPID
+KillMode=mixed
+TimeoutStopSec=30
+Restart=on-failure
+RestartSec=5
+
+# --- Filesystem Isolation (systemd-hardening-skill) ---
+#
+# ProtectSystem=strict: entire filesystem tree mounted read-only except
+# paths listed in ReadWritePaths below.
+# DEVIATION note: we cannot use ProtectSystem=full because the daemon
+# needs to read from arbitrary monitored directories — hence we use
+# 'strict' and explicitly allowlist only the two writable directories.
+ProtectSystem=strict
+
+# Only quarantine/ and logs/ are writable (systemd-hardening-skill).
+# /etc/antivirus is deliberately read-only (config, no write needed).
+ReadWritePaths=/opt/antivirus/quarantine /opt/antivirus/logs
+
+# Allow read-only access to monitored path and signature database
+ReadOnlyPaths=/opt/antivirus/signatures /opt/antivirus/bin
+
+# --- Home & Temp Isolation ---
+ProtectHome=true
+# PrivateTmp=true: daemon gets its own /tmp namespace, invisible to host.
+# This prevents temp-file snooping across processes.
+PrivateTmp=true
+
+# --- Privilege Escalation Prevention ---
+# NoNewPrivileges prevents any setuid/setgid escalation inside the daemon,
+# even if a dependency pulls in a vulnerable binary.
+NoNewPrivileges=true
+
+# --- Capability Bounding Set ---
+# CAP_DAC_READ_SEARCH: required to read files in monitored dirs regardless
+#                      of their owner permissions (needed for scanning).
+# All other capabilities are dropped.
+# DEVIATION: if ClamAV freshclam integration is needed, CAP_NET_RAW may
+# be required — document here before adding it.
+CapabilityBoundingSet=CAP_DAC_READ_SEARCH
+AmbientCapabilities=CAP_DAC_READ_SEARCH
+
+# --- Network Restriction ---
+# Only AF_UNIX (local IPC with av-cli), AF_INET / AF_INET6 (backend API
+# heartbeat and result reporting).
+# DEVIATION: if future integration requires Netlink (e.g., fanotify group
+# marks), add AF_NETLINK here with a justification comment.
+RestrictAddressFamilies=AF_UNIX AF_INET AF_INET6
+
+# --- Syscall Filtering ---
+# @system-service: broad allowlist for normal daemon operation.
+# Individual risky syscall groups explicitly blocked below.
+SystemCallFilter=@system-service
+# Block syscall groups that enable container escape / privilege escalation
+SystemCallFilter=~@privileged @resources @obsolete
+
+# --- Namespace Isolation ---
+# Prevent the daemon from creating user namespaces (common kernel exploit
+# vector post-exploitation).
+RestrictNamespaces=true
+
+# --- Other Hardening ---
+# Prevent writing to kernel tunables
+ProtectKernelTunables=true
+# Prevent loading kernel modules
+ProtectKernelModules=true
+# Protect kernel log from the daemon
+ProtectKernelLogs=true
+# Prevent access to control groups hierarchy
+ProtectControlGroups=true
+# Deny memory regions being both writable and executable simultaneously
+# (mitigates JIT injection if the daemon ever links a JIT library)
+MemoryDenyWriteExecute=true
+# Prevent the daemon from locking memory indefinitely (DoS protection)
+LimitMEMLOCK=64M
+# Lock down /proc and /sys to only the daemon's own view
+ProcSubset=pid
+ProtectProc=invisible
+
+# --- Logging ---
+# Send structured log output to the systemd journal; backend log
+# collector reads from journalctl -u antivirus -o json.
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=av-daemon
+
+# --- Environment ---
+# No hardcoded secrets: daemon reads /etc/antivirus/daemon.conf for all
+# credentials (API key hash, backend endpoint).  See output_requirements.
+# Secrets must NOT appear in this unit file.
+EnvironmentFile=-/etc/antivirus/daemon.env
+
+[Install]
+WantedBy=multi-user.target
+
+# ============================================================================
+# Validation step (systemd-hardening-skill):
+#   After installing this unit, run:
+#     systemd-analyze security antivirus.service
+#   and iterate until the exposure score is minimised.
+#   Target: exposure score < 4.0 (SAFE range).
+#
+# Any directive intentionally left permissive must have a justification
+# comment above it in this file (see DEVIATION notes above).
+# ============================================================================

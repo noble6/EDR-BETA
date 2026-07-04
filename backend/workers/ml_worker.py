@@ -124,7 +124,7 @@ async def process_inference(payload: dict):
         if 40.0 < inference["risk_score"] < 90.0:
             logger.info("sandbox_trigger", task_id=task_id, sha256=sha256, risk=inference["risk_score"])
             # Push to sandbox-queue via RabbitMQ
-            connection = await aio_pika.connect_robust(RABBITMQ_URL)
+            connection = await aio_pika.connect_robust(settings.RABBITMQ_URL)
             async with connection:
                 channel = await connection.channel()
                 await channel.default_exchange.publish(

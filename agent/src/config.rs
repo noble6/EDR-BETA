@@ -11,6 +11,9 @@ pub struct Config {
     pub quarantine_dir: String,
     pub cache_capacity: usize,
     pub offline_queue_path: String,
+    /// Path to the YARA signature .yar file.
+    /// Defaults to /opt/antivirus/signatures/signatures.yar if not set.
+    pub signatures_path: Option<String>,
 }
 
 pub fn load_config(path: &str) -> Config {
