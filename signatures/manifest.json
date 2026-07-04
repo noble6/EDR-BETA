@@ -1,0 +1,57 @@
+{
+  "version": "1.0.0",
+  "released_at": "2026-07-04T00:00:00Z",
+  "source": "edr-beta-internal",
+  "rule_count": 7,
+  "rules": [
+    {
+      "id": "EICAR_Test_File",
+      "version": "1.0.0",
+      "severity": "low",
+      "added": "2026-07-04"
+    },
+    {
+      "id": "Trojan_Generic_ObfuscatedPS1_Dropper",
+      "version": "1.0.0",
+      "severity": "high",
+      "added": "2026-07-04"
+    },
+    {
+      "id": "Backdoor_Linux_BashReverseShell",
+      "version": "1.0.0",
+      "severity": "high",
+      "added": "2026-07-04"
+    },
+    {
+      "id": "Dropper_Polyglot_ELF_PE_Embed",
+      "version": "1.0.0",
+      "severity": "medium",
+      "added": "2026-07-04"
+    },
+    {
+      "id": "Loader_Generic_XOR_Shellcode_Stub",
+      "version": "1.0.0",
+      "severity": "medium",
+      "added": "2026-07-04"
+    },
+    {
+      "id": "CoinMiner_XMRig_Config_Strings",
+      "version": "1.0.0",
+      "severity": "medium",
+      "added": "2026-07-04"
+    },
+    {
+      "id": "Ransomware_ShadowCopy_Deletion",
+      "version": "1.0.0",
+      "severity": "high",
+      "added": "2026-07-04"
+    }
+  ],
+  "changelog": [
+    {
+      "version": "1.0.0",
+      "date": "2026-07-04",
+      "notes": "Initial signature set: EICAR, PS1 dropper, Linux revshell, polyglot ELF/PE, XOR loader, XMRig, ransomware shadow-copy deletion"
+    }
+  ]
+}

@@ -5,5 +5,6 @@
     "monitor_dir": "/tmp/monitor",
     "quarantine_dir": "/tmp/quarantine",
     "cache_capacity": 2048,
-    "offline_queue_path": "/tmp/edr/offline-queue.jsonl"
+    "offline_queue_path": "/tmp/edr/offline-queue.jsonl",
+    "signatures_path": "/opt/antivirus/signatures/signatures.yar"
 }
