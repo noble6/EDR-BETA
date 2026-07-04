@@ -1,18 +1,54 @@
+# EDR-BETA Backend — Python Dependencies
+# ========================================
+# Core framework
 fastapi==0.104.1
 uvicorn==0.24.0
+
+# Input validation (fastapi-backend-skill: Pydantic-only validation)
 pydantic==2.4.2
 pydantic-settings==2.0.3
-sqlalchemy==2.0.23
+
+# Async Postgres driver (fastapi-backend-skill: asyncpg, pool at startup)
 asyncpg==0.28.0
+
+# ORM for legacy SQLAlchemy models (existing db/models.py)
+sqlalchemy==2.0.23
+
+# Redis (cache + rate-limit token buckets)
 redis==5.0.1
+
+# Message broker
 aio-pika==9.3.0
+
+# HTTP client — NEVER use `requests` in async handlers (fastapi-backend-skill)
+httpx==0.26.0
+
+# Retry logic for outbound signature feed fetches
 tenacity==8.2.3
+
+# Object storage client
 boto3==1.28.84
+
+# Multipart file uploads from agents
 python-multipart==0.0.6
+
+# Structured logging
 structlog==23.2.0
+
+# Auth
 bcrypt==4.1.2
+PyJWT==2.8.0
+
+# Rate limiting (fastapi-backend-skill: rate-limit signature-update endpoints)
+slowapi==0.1.9
+
+# Static analysis tooling
 lief==0.13.2
+
+# ML pipeline
 scikit-learn==1.3.2
 pandas==2.1.3
 joblib==1.3.2
+
+# Sandbox container spawning
 docker==6.1.3
