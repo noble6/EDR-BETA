@@ -29,11 +29,15 @@ use tokio::sync::mpsc;
 mod api_client;
 mod config;
 mod ebpf_monitor;
+mod error;
+mod ipc;
 mod monitor;
 mod offline_queue;
 mod policy_engine;
 mod quarantine_safe;  // Step 2: atomic quarantine module
 mod scanner;          // scanner::yara_engine + compute_sha256
+mod signatures;
+mod telemetry;
 
 use scanner::yara_engine::YaraEngine;
 
@@ -149,9 +153,15 @@ async fn main() {
         // Clone the Arc — zero cost, shares the compiled ruleset.
         let engine_ref = Arc::clone(&yara_engine);
         match engine_ref.scan_file(&path).await {
-            Ok(matches) if !matches.is_empty() => {
-                // Use the highest-severity match as the canonical detection
-                let hit = &matches[0];
+                let hit = matches
+                    .iter()
+                    .max_by_key(|m| match m.severity.as_str() {
+                        "critical" => 3,
+                        "high" => 2,
+                        "medium" => 1,
+                        _ => 0,
+                    })
+                    .unwrap();
                 info!(
                     "yara_hit path={:?} rule={} severity={}",
                     path, hit.rule_id, hit.severity

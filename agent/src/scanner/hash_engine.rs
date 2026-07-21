@@ -3,12 +3,7 @@ use std::collections::{HashMap, VecDeque};
 use std::fs::File;
 use std::io::{self, Read};
 use std::path::Path;
-
-#[derive(Clone, Debug)]
-pub struct Verdict {
-    pub classification: String,
-    pub risk_score: f64,
-}
+use super::verdict::Verdict;
 
 // Simple bounded LRU cache to avoid re-sending known files rapidly.
 pub struct LocalCache {

@@ -33,7 +33,7 @@ from tenacity import (
 )
 
 from backend.core.config import settings
-from backend.database.pool import get_pool
+from backend.db.pool import get_pool
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/signatures", tags=["signatures"])
@@ -51,7 +51,7 @@ def get_http_client() -> httpx.AsyncClient:
     if _http_client is None or _http_client.is_closed:
         _http_client = httpx.AsyncClient(
             timeout=httpx.Timeout(connect=5.0, read=30.0, write=10.0, pool=5.0),
-            follow_redirects=True,
+            follow_redirects=False,
         )
     return _http_client
 

@@ -13,7 +13,10 @@
 // exposed publicly.
 
 pub mod yara_engine;
+pub mod hash_engine;
+pub mod verdict;
+pub mod file_guard;
 
-// Re-export the SHA-256 helper already implemented in the parent scanner module
-// so quarantine_safe.rs can call `crate::scanner::compute_sha256` cleanly.
-pub use super::scanner::compute_sha256;
+pub use hash_engine::compute_sha256;
+pub use hash_engine::LocalCache;
+pub use verdict::Verdict;

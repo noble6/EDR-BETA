@@ -40,7 +40,7 @@ limiter = Limiter(key_func=get_remote_address)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # --- Startup ---
-    from database.pool import create_pool
+    from db.pool import create_pool
 
     # DSN comes from env var → settings — never logged
     dsn = settings.DATABASE_URL.replace("postgresql+asyncpg://", "postgresql://")
@@ -49,7 +49,7 @@ async def lifespan(app: FastAPI):
     yield
 
     # --- Shutdown ---
-    from database.pool import close_pool
+    from db.pool import close_pool
     await close_pool()
     logger.info("asyncpg_pool_closed")
 

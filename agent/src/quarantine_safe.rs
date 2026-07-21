@@ -36,7 +36,7 @@ pub enum QuarantineError {
     #[error("Source file not found: {0}")]
     NotFound(String),
 
-    #[error("Failed to move file to quarantine: {0}")]
+    #[error("Filesystem operation failed: {0}")]
     MoveFailed(#[from] io::Error),
 
     #[error("Hash mismatch after quarantine move — file may be corrupted")]
@@ -114,7 +114,7 @@ pub fn quarantine_file(
         .file_name()
         .map(|n| n.to_string_lossy().to_string())
         .unwrap_or_else(|| "unknown".to_string());
-    let dest_name = format!("{}-{}", &sha256[..16], file_name);
+    let dest_name = format!("{}-{}", sha256.get(0..16).unwrap_or(sha256), file_name);
     let dest = Path::new(quarantine_dir).join(&dest_name);
 
     // --- STEP 1: Atomic move (same filesystem) ---
@@ -187,18 +187,15 @@ pub fn quarantine_file(
     // --- STEP 4: Structured audit log (quarantine-handling-skill) ---
     // Emit JSON log line consumed by the backend for dashboard visibility.
     info!(
-        "quarantine_event \
-         {{\"event\":\"quarantined\",\
-         \"original_path\":\"{}\",\
-         \"quarantine_path\":\"{}\",\
-         \"sha256\":\"{}\",\
-         \"signature_id\":\"{}\",\
-         \"severity\":\"{}\"}}",
-        file_path.display(),
-        dest.display(),
-        sha256,
-        signature_id,
-        severity,
+        "quarantine_event {}",
+        serde_json::json!({
+            "event": "quarantined",
+            "original_path": file_path.display().to_string(),
+            "quarantine_path": dest.display().to_string(),
+            "sha256": sha256,
+            "signature_id": signature_id,
+            "severity": severity,
+        })
     );
 
     // TODO (future): encrypt quarantined file with AES-256-GCM using a key
