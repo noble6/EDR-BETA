@@ -33,7 +33,7 @@ from tenacity import (
 )
 
 from backend.core.config import settings
-from backend.database.pool import get_pool
+from backend.db.pool import get_pool
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/signatures", tags=["signatures"])

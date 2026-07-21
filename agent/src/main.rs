@@ -29,11 +29,15 @@ use tokio::sync::mpsc;
 mod api_client;
 mod config;
 mod ebpf_monitor;
+mod error;
+mod ipc;
 mod monitor;
 mod offline_queue;
 mod policy_engine;
-mod quarantine_safe;  // Step 2: atomic quarantine module
-mod scanner;          // scanner::yara_engine + compute_sha256
+mod quarantine_safe;
+mod scanner;
+mod signatures;
+mod telemetry;
 
 use scanner::yara_engine::YaraEngine;
 

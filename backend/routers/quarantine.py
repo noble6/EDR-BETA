@@ -24,7 +24,7 @@ import structlog
 from fastapi import APIRouter, Depends, HTTPException, Request
 from pydantic import BaseModel, Field
 
-from backend.database.pool import get_pool
+from backend.db.pool import get_pool
 
 logger = structlog.get_logger()
 router = APIRouter(prefix="/quarantine", tags=["quarantine"])
