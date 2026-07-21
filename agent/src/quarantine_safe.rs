@@ -114,7 +114,7 @@ pub fn quarantine_file(
         .file_name()
         .map(|n| n.to_string_lossy().to_string())
         .unwrap_or_else(|| "unknown".to_string());
-    let dest_name = format!("{}-{}", &sha256[..16], file_name);
+    let dest_name = format!("{}-{}", sha256.get(0..16).unwrap_or(sha256), file_name);
     let dest = Path::new(quarantine_dir).join(&dest_name);
 
     // --- STEP 1: Atomic move (same filesystem) ---
