@@ -36,7 +36,7 @@ pub enum QuarantineError {
     #[error("Source file not found: {0}")]
     NotFound(String),
 
-    #[error("Failed to move file to quarantine: {0}")]
+    #[error("Filesystem operation failed: {0}")]
     MoveFailed(#[from] io::Error),
 
     #[error("Hash mismatch after quarantine move — file may be corrupted")]
