@@ -34,8 +34,8 @@ mod ipc;
 mod monitor;
 mod offline_queue;
 mod policy_engine;
-mod quarantine_safe;
-mod scanner;
+mod quarantine_safe;  // Step 2: atomic quarantine module
+mod scanner;          // scanner::yara_engine + compute_sha256
 mod signatures;
 mod telemetry;
 
