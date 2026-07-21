@@ -292,7 +292,7 @@ async def delete_quarantined_file(
                     str(uuid.uuid4()),
                     actor,
                     quarantine_id,
-                    f'{{"reason": "{body.reason}"}}',
+                    asyncpg.types.Json({"reason": body.reason}),
                 )
 
         logger.info(
